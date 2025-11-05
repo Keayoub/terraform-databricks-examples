@@ -5,13 +5,14 @@ This repository contains the following:
 - Multiple examples of Databricks workspace and resources deployment on Azure, AWS and GCP using [Databricks Terraform provider](https://registry.terraform.io/providers/databricks/databricks/latest/docs).
 - Examples of implementing CI/CD pipelines to automate your Terraform deployments using Azure DevOps or GitHub Actions.
 
-* [Using the repository](#using-the-repository)
-* [Repository structure](#repository-structure)
-* [Repository content](#repository-content)
-   * [Examples](#examples)
-   * [Modules](#modules)
-   * [CI/CD pipelines](#cicd-pipelines)
-* [Contributing](#contributing)
+- [terraform-databricks-examples](#terraform-databricks-examples)
+  - [Using the repository](#using-the-repository)
+  - [Repository structure](#repository-structure)
+  - [Repository content](#repository-content)
+    - [Examples](#examples)
+    - [Modules](#modules)
+    - [CI/CD pipelines](#cicd-pipelines)
+  - [Contributing](#contributing)
 
 ## Using the repository
 
@@ -51,20 +52,7 @@ The folder `examples` contains the following Terraform implementation examples :
 | Azure | [adb-uc](examples/adb-uc/)                                                         | ADB Unity Catalog Process                                                                                                                                                                            |
 | Azure | [adb-unity-catalog-basic-demo](examples/adb-unity-catalog-basic-demo/)             | ADB Unity Catalog end-to-end demo including UC metastore setup, Users/groups sync from AAD to databricks account, UC Catalog, External locations, Schemas, & Access Grants                           |
 | Azure | [adb-overwatch](examples/adb-overwatch/)             | Overwatch multi-workspace deployment on Azure                          |
-| AWS   | [aws-workspace-basic](examples/aws-workspace-basic/)                               | Provisioning AWS Databricks E2                                                                                                                                                                       |
-| AWS   | [aws-workspace-with-firewall](examples/aws-workspace-with-firewall/)               | Provisioning AWS Databricks E2 with an AWS Firewall                                                                                                                                                  |
-| AWS   | [aws-exfiltration-protection](examples/aws-exfiltration-protection/)               | An implementation of [Data Exfiltration Protection on AWS](https://www.databricks.com/blog/2021/02/02/data-exfiltration-protection-with-databricks-on-aws.html)                                      |
-| AWS   | aws-workspace-with-private-link                                                    | Coming soon                                                                                                                                                                                          |
-| AWS   | [aws-databricks-flat](examples/aws-databricks-flat/)                               | AWS Databricks simple example                                                                                                                                                                        |
-| AWS   | [aws-databricks-modular-privatelink](examples/aws-databricks-modular-privatelink/) | Deploy multiple AWS Databricks workspaces                                                                                                                                                            |
-| AWS   | [aws-workspace-uc-simple](examples/aws-workspace-uc-simple/)                       | Provisioning AWS Databricks E2 with Unity Catalog in a single apply                                                                                                                                                                                               |
-| AWS   | [aws-databricks-uc](examples/aws-databricks-uc/)                                   | AWS UC                                                                                                                                                                                               |
-| AWS   | [aws-databricks-uc-bootstrap](examples/aws-databricks-uc-bootstrap/)               | AWS UC                                                                                                                                                                                               |
-| AWS   | [aws-remote-backend-infra](examples/aws-remote-backend-infra/)                     | Simple example on remote backend                                                                                                                                                                     |
-| AWS   | [aws-workspace-config](examples/aws-workspace-config/)                             | Configure workspace objects                                                                                 |
-| GCP   | [gcp-sa-provisionning](examples/gcp-sa-provisionning/)                                                                         |    Provisionning of the identity with the permissions required to deploy on GCP.                                                                                                                                 |
-| GCP   | [gcp-basic](examples/gcp-basic/)                                                                         |    Workspace Deployment with managed vpc                                                                                                                               |
-| GCP   | [gcp-byovpc](examples/gcp-byovpc/)                                                                         |    Workspace Deployment with customer-managed vpc                                                                                                                              |
+            
 ### Modules
 
 The folder `modules` contains the following Terraform modules :
@@ -81,17 +69,8 @@ The folder `modules` contains the following Terraform modules :
 | Azure | [adb-overwatch-mws-config](modules/adb-overwatch-mws-config/)                                             | Overwatch multi-workspace deployment on Azure                                                                                                                                             |
 | Azure | [adb-overwatch-main-ws](modules/adb-overwatch-main-ws/)                                                   | Main Overwatch workspace deployment                                                                                                                                                       |
 | Azure | [adb-overwatch-ws-to-monitor](modules/adb-overwatch-ws-to-monitor/)                                       | Overwatch deployment on the Azure workspace to monitor                                                                                                                                    |
-| Azure | [adb-overwatch-analysis](modules/adb-overwatch-analysis/)                                                 | Overwatch analysis notebooks deployment on Azure                                                                                                                                          |
-| AWS   | [aws-workspace-basic](modules/aws-workspace-basic/)                                                       | Provisioning AWS Databricks E2                                                                                                                                                            |
-| AWS   | [aws-databricks-base-infra](modules/aws-databricks-base-infra/)                                           | Provisioning AWS Infrastructure to be used for the deployment of a Databricks E2 workspace                                                                                                |
-| AWS   | [aws-databricks-unity-catalog](modules/aws-databricks-unity-catalog/)                                     | Provisioning the AWS Infrastructure and setting up the metastore for Databricks Unity Catalog                                                                                             |
-| AWS   | [aws-databricks-workspace](modules/aws-databricks-workspace/)                                             | Provisioning AWS Databricks E2 Workspace using pre-created AWS Infra                                                                                                                      |
-| AWS   | [aws-workspace-with-firewall](modules/aws-workspace-with-firewall/)                                       | Provisioning AWS Databricks E2 with an AWS Firewall                                                                                                                                       |
-| AWS   | [aws-exfiltration-protection](modules/aws-exfiltration-protection/)                                       | An implementation of [Data Exfiltration Protection on AWS](https://www.databricks.com/blog/2021/02/02/data-exfiltration-protection-with-databricks-on-aws.html)                           |
-| AWS   | aws-workspace-with-private-link                                                                           | Coming soon                                                                                                                                                                               |
-| GCP   | [gcp-sa-provisionning](modules/gcp-sa-provisionning/)                                                                                                |                  Provisions the identity (SA) with the correct permissions  |
-| GCP   | [gcp-workspace-basic](modules/gcp-workspace-basic/)                                                                                                |                  Provisions a workspace with managed VPC                                                                                                                                                          |
-| GCP   | [gcp-workspace-byovpc](modules/gcp-workspace-byovpc/)                                                                                                |                  Workspace with customer-managed VPC.                                                                                                                                                             |
+| Azure | [adb-overwatch-analysis](modules/adb-overwatch-analysis/) | Overwatch analysis notebooks Deployment on Azure |
+
 ### CI/CD pipelines
 
 The `cicd-pipelines` folder contains the following implementation examples of pipeline:
