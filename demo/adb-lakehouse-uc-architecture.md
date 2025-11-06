@@ -10,14 +10,162 @@
 
 ## 📋 Table of Contents
 
-1. [Architecture Overview](#architecture-overview)
-2. [Component Inventory](#component-inventory)
-3. [Network Architecture](#network-architecture)
-4. [Unity Catalog Architecture](#unity-catalog-architecture)
-5. [Security Model](#security-model)
-6. [Data Flow](#data-flow)
-7. [Storage Architecture](#storage-architecture)
-8. [Component Details](#component-details)
+1. [Prerequisites](#prerequisites)
+2. [Architecture Overview](#architecture-overview)
+3. [Component Inventory](#component-inventory)
+4. [Network Architecture](#network-architecture)
+5. [Unity Catalog Architecture](#unity-catalog-architecture)
+6. [Security Model](#security-model)
+7. [Data Flow](#data-flow)
+8. [Storage Architecture](#storage-architecture)
+9. [Component Details](#component-details)
+
+---
+
+## ✅ Prerequisites
+
+Before running Terraform to deploy this Azure Databricks lakehouse architecture, ensure you have the following prerequisites in place:
+
+### 1. **Azure Subscription & Permissions**
+- Active Azure subscription
+- **Owner** or **Contributor** role on the subscription (required for role assignments)
+- **User Access Administrator** role (for assigning managed identity permissions)
+- Azure Databricks account administrator access
+
+### 2. **Databricks Account Setup**
+- **Databricks Account** (account-level access required)
+  - Sign in to [accounts.azuredatabricks.net](https://accounts.azuredatabricks.net)
+  - Note your **Account ID** (format: `xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`)
+- **Account Admin** privileges to create Unity Catalog metastores
+- Azure Databricks resource provider registered in your subscription:
+  ```bash
+  az provider register --namespace Microsoft.Databricks
+  az provider show --namespace Microsoft.Databricks --query "registrationState"
+  ```
+
+### 3. **Tools & Software**
+- **Terraform** >= 1.5.0
+  ```bash
+  terraform version
+  ```
+- **Azure CLI** >= 2.50.0
+  ```bash
+  az --version
+  az login
+  az account set --subscription "c7b690b3-d9ad-4ed0-9942-4e7a36d0c187"
+  ```
+- **Databricks CLI** (optional, for verification)
+  ```bash
+  databricks --version
+  ```
+
+### 4. **Authentication Configuration**
+Configure one of the following authentication methods:
+
+#### Option A: Azure CLI Authentication (Recommended for local development)
+```bash
+az login
+az account show
+```
+
+#### Option B: Service Principal Authentication (Recommended for CI/CD)
+```bash
+# Create service principal
+az ad sp create-for-rbac --name "terraform-databricks" \
+  --role Contributor \
+  --scopes /subscriptions/c7b690b3-d9ad-4ed0-9942-4e7a36d0c187
+
+# Set environment variables
+export ARM_CLIENT_ID="<client-id>"
+export ARM_CLIENT_SECRET="<client-secret>"
+export ARM_TENANT_ID="<tenant-id>"
+export ARM_SUBSCRIPTION_ID="c7b690b3-d9ad-4ed0-9942-4e7a36d0c187"
+```
+
+### 5. **Terraform Backend (Optional but Recommended)**
+For state management in team environments, configure remote backend:
+
+```hcl
+# backend.tf
+terraform {
+  backend "azurerm" {
+    resource_group_name  = "rg-terraform-state"
+    storage_account_name = "tfstatexxxxxx"
+    container_name       = "tfstate"
+    key                  = "adb-lakehouse.tfstate"
+  }
+}
+```
+
+Create the storage account:
+```bash
+# Create resource group for state
+az group create --name rg-terraform-state --location eastus2
+
+# Create storage account
+az storage account create \
+  --name tfstatexxxxxx \
+  --resource-group rg-terraform-state \
+  --location eastus2 \
+  --sku Standard_LRS
+
+# Create container
+az storage container create \
+  --name tfstate \
+  --account-name tfstatexxxxxx
+```
+
+### 6. **Network Planning**
+- VNet address space: **10.178.0.0/16** (or customize in `terraform.tfvars`)
+- Ensure no IP conflicts with existing networks
+- Private subnet: **10.178.0.0/20** (4,096 IPs for worker nodes)
+- Public subnet: **10.178.16.0/20** (4,096 IPs for control plane)
+
+### 7. **Required Configuration File**
+Create or verify `terraform.tfvars` with your specific values:
+
+```hcl
+# terraform.tfvars
+environment     = "dev"
+project_name    = "dbx-lakehouse"
+location        = "eastus2"
+cidr            = "10.178.0.0/16"
+
+# Databricks Account
+databricks_account_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+
+# Tags
+tags = {
+  Environment = "Development"
+  Project     = "Lakehouse"
+  ManagedBy   = "Terraform"
+}
+```
+
+### 8. **Verify Azure Quotas**
+Check you have sufficient quotas in your region:
+- **Virtual Machines**: At least 8 vCPUs for Databricks clusters
+- **Public IP Addresses**: At least 1
+- **Virtual Networks**: At least 1
+- **Storage Accounts**: At least 2
+
+```bash
+# Check compute quota
+az vm list-usage --location eastus2 --output table
+
+# Check network quota
+az network list-usages --location eastus2 --output table
+```
+
+### 9. **Pre-Deployment Checklist**
+- [ ] Azure CLI authenticated (`az account show`)
+- [ ] Terraform installed and version verified
+- [ ] Databricks account ID obtained
+- [ ] `terraform.tfvars` configured
+- [ ] Network CIDR ranges planned (no conflicts)
+- [ ] Required permissions verified (Owner/Contributor + User Access Admin)
+- [ ] Azure Databricks provider registered
+- [ ] Terraform backend configured (optional)
 
 ---
 
@@ -35,8 +183,8 @@ This deployment creates a complete, production-ready Azure Databricks lakehouse 
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐
-│                         AZURE SUBSCRIPTION                        │
-│                    c7b690b3-d9ad-4ed0-9942-4e7a36d0c187          │
+│                         AZURE SUBSCRIPTION                       │
+│                    xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx          │
 └──────────────────────────────────────────────────────────────────┘
                                   │
                 ┌─────────────────┴─────────────────┐
