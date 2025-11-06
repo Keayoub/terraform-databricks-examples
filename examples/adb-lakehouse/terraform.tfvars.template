@@ -1,0 +1,153 @@
+# ===================================================================
+# Azure Databricks Lakehouse with Unity Catalog - Configuration
+# ===================================================================
+# Copy this file to terraform.tfvars and fill in your values
+#
+# IMPORTANT:
+# - Storage account names must be globally unique
+# - Use lowercase letters and numbers only (no hyphens)
+# - Email addresses should be lowercase
+# ===================================================================
+
+# -------------------------------------------------------------------
+# Required: Azure Subscription
+# -------------------------------------------------------------------
+# Get this from: az account show --query id -o tsv
+subscription_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+
+# -------------------------------------------------------------------
+# Required: Databricks Account
+# -------------------------------------------------------------------
+# Get this from: https://accounts.azuredatabricks.net/
+# (Look in the URL after logging in: accounts.azuredatabricks.net/<account_id>)
+account_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+
+# -------------------------------------------------------------------
+# Required: Deployment Region
+# -------------------------------------------------------------------
+# Choose an Azure region close to your users
+# Examples: eastus, eastus2, westus2, westeurope, northeurope
+location = "eastus2"
+
+# -------------------------------------------------------------------
+# Required: Administrators
+# -------------------------------------------------------------------
+# List of user emails who will have admin access to Unity Catalog
+# IMPORTANT: Use lowercase email addresses!
+metastore_admins = [
+  "admin@yourdomain.onmicrosoft.com"
+]
+
+# -------------------------------------------------------------------
+# Required: Storage Account Names
+# -------------------------------------------------------------------
+# These must be globally unique across ALL Azure subscriptions
+# - Use only lowercase letters and numbers (no hyphens)
+# - Between 3-24 characters
+# - Add a random suffix if needed to ensure uniqueness
+
+# Storage for Unity Catalog metastore
+metastore_storage_name = "dbxlhmetastore"
+
+# Storage for external data (landing zone)
+landing_external_location_name = "dbxlhlanding"
+
+# -------------------------------------------------------------------
+# Resource Group and Resource Names
+# -------------------------------------------------------------------
+
+# Resource group for shared resources (storage, access connector)
+shared_resource_group_name = "rg-databricks-shared"
+
+# Unity Catalog metastore name
+metastore_name = "unity-catalog-metastore"
+
+# Access connector name (for managed identity)
+access_connector_name = "dbx-lh-connector"
+
+# -------------------------------------------------------------------
+# Databricks Workspace Configuration
+# -------------------------------------------------------------------
+
+# Workspace name (must be unique within the resource group)
+workspace_name = "dbx-lakehouse-workspace"
+
+# Virtual network address space for workspace
+# Default: 10.178.0.0/16 (provides 65,536 IP addresses)
+spoke_vnet_address_space = "10.178.0.0/16"
+
+# -------------------------------------------------------------------
+# Unity Catalog Configuration
+# -------------------------------------------------------------------
+
+# Name for the bronze catalog (for raw/bronze layer data)
+bronze_catalog_name = "bronze_catalog"
+
+# Name for the bronze schema within the catalog
+bronze_source1_schema_name = "bronze_source1"
+
+# -------------------------------------------------------------------
+# Tags
+# -------------------------------------------------------------------
+# Tags applied to all resources for organization and cost tracking
+tags = {
+  Environment = "dev"
+  Project     = "databricks-lakehouse"
+  Owner       = "admin@yourdomain.onmicrosoft.com"
+  ManagedBy   = "Terraform"
+  CostCenter  = "DataEngineering"
+}
+
+# -------------------------------------------------------------------
+# Optional: Advanced Networking (uncomment if needed)
+# -------------------------------------------------------------------
+
+# Enable private endpoint for Databricks workspace
+# enable_private_endpoint = false
+
+# Allow public access to Databricks workspace
+# public_network_access_enabled = true
+
+# -------------------------------------------------------------------
+# Optional: Custom Subnet Configuration
+# -------------------------------------------------------------------
+# Uncomment and modify if you need custom subnet sizes
+# Note: Databricks requires minimum /26 for public and /26 for private
+
+# public_subnet_cidr = "10.178.0.0/18"
+# private_subnet_cidr = "10.178.64.0/18"
+
+# -------------------------------------------------------------------
+# Environment-Specific Settings
+# -------------------------------------------------------------------
+
+# Environment suffix (added to resource names)
+environment = "dev"
+
+# -------------------------------------------------------------------
+# Notes & Best Practices
+# -------------------------------------------------------------------
+#
+# 1. SECURITY:
+#    - Storage accounts are configured with shared_access_key_enabled = false
+#    - Azure AD authentication is used for all storage access
+#    - Network access to storage is restricted by default
+#
+# 2. NAMING:
+#    - Use consistent naming conventions across all resources
+#    - Include environment suffix in names (dev, staging, prod)
+#    - Storage names must be globally unique
+#
+# 3. COST OPTIMIZATION:
+#    - Start with smaller workspace SKU (Standard or Premium)
+#    - Use auto-scaling clusters
+#    - Enable cluster auto-termination
+#    - Review storage redundancy settings (LRS vs GRS)
+#
+# 4. GOVERNANCE:
+#    - Document all admin users
+#    - Use Azure AD groups for user management
+#    - Enable audit logging
+#    - Review Unity Catalog permissions regularly
+#
+# ===================================================================

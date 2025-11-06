@@ -20,4 +20,6 @@ metastore_admins                = ["<your email here>"]
 
 tags = {
   Owner = "<your email here>"
+  Environment = "dev"
+  Project     = "databricks-lakehouse"
 }

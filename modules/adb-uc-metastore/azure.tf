@@ -15,13 +15,27 @@ resource "azurerm_databricks_access_connector" "access_connector" {
 }
 
 resource "azurerm_storage_account" "unity_catalog" {
-  name                     = var.metastore_storage_name
-  location                 = azurerm_resource_group.shared_resource_group.location
-  resource_group_name      = var.shared_resource_group_name
-  tags                     = var.tags
-  account_tier             = "Standard"
-  account_replication_type = "GRS"
-  is_hns_enabled           = true
+  name                            = var.metastore_storage_name
+  location                        = azurerm_resource_group.shared_resource_group.location
+  resource_group_name             = var.shared_resource_group_name
+  tags                            = var.tags
+  account_tier                    = "Standard"
+  account_replication_type        = "GRS"
+  is_hns_enabled                  = true
+  shared_access_key_enabled       = false
+  allow_nested_items_to_be_public = false
+  public_network_access_enabled   = true  # Changed to true to allow Databricks access
+  
+  # Network rules to allow access from Databricks subnets
+  dynamic "network_rules" {
+    for_each = length(var.databricks_subnet_ids) > 0 ? [1] : []
+    content {
+      default_action             = "Deny"
+      ip_rules                   = []
+      virtual_network_subnet_ids = var.databricks_subnet_ids
+      bypass                     = ["AzureServices"]
+    }
+  }
 }
 
 resource "azurerm_storage_container" "unity_catalog" {

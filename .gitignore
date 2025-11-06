@@ -6,7 +6,9 @@
 *.tfstate.backup
 *.tfstate.lock.
 *.terraform.lock.hcl
-
+tfplan
+terraform.tfstate.*
+.terraform/
 # logs
 *.log
 
@@ -30,3 +32,4 @@
 .vscode/
 
 .idea/
+examples/adb-lakehouse/terraform.tfvars.local

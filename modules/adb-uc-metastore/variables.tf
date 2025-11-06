@@ -28,3 +28,8 @@ variable "tags" {
   description = "(Required) Map of tags to attach to resources"
 }
 
+variable "databricks_subnet_ids" {
+  type        = list(string)
+  description = "List of Databricks subnet IDs for storage firewall rules"
+  default     = []
+}
