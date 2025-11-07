@@ -1,0 +1,92 @@
+bundle:
+  name: sales-domain
+
+# Variables globales (remplacées via env/targets)
+variables:
+  catalog_name: "sales_catalog"
+  schema_raw: "raw"
+  schema_curated: "curated"
+  schema_gold: "gold"
+  schema_reference: "reference"
+  schema_ml: "ml"
+
+resources:
+  # Notebooks versionnés (liés au repo Git via bundle)
+  notebooks:
+    bronze_ingestion_nb:
+      path: ./notebooks/bronze_ingestion.py
+    silver_transform_nb:
+      path: ./notebooks/silver_transform.sql
+
+  # Job/Workflow d’ingestion Bronze (Auto Loader)
+  jobs:
+    job_sales_bronze_ingestion:
+      name: "[sales] bronze ingestion"
+      tags: { domain: "sales", layer: "raw" }
+      tasks:
+        - task_key: bronze_ingestion
+          notebook_path: ./notebooks/bronze_ingestion.py
+          # Cluster existant OU job cluster (exemple job cluster ci-dessous)
+          job_cluster_key: jcl_small_uc
+          libraries: []
+          timeout_seconds: 7200
+
+      job_clusters:
+        - job_cluster_key: jcl_small_uc
+          new_cluster:
+            spark_version: "13.3.x-scala2.12"          # runtime UC-enabled
+            data_security_mode: "SINGLE_USER"          # UC strict (ou 'USER_ISOLATION' / 'NONE' selon besoin)
+            num_workers: 2
+            spark_conf:
+              spark.databricks.cluster.profile: "serverless"
+            azure_attributes:
+              first_on_demand: 1
+            autotermination_minutes: 20
+
+  # Job de transformation Silver → Gold
+    job_sales_silver_to_gold:
+      name: "[sales] silver to gold"
+      tags: { domain: "sales", layer: "curated/gold" }
+      tasks:
+        - task_key: silver_transform
+          notebook_path: ./notebooks/silver_transform.sql
+          job_cluster_key: jcl_small_uc
+          timeout_seconds: 3600
+      job_clusters:
+        - job_cluster_key: jcl_small_uc
+          new_cluster:
+            spark_version: "13.3.x-scala2.12"
+            data_security_mode: "SINGLE_USER"
+            num_workers: 2
+            autotermination_minutes: 20
+
+targets:
+  dev:
+    workspace:
+      host: ${env.DBRKS_HOST_DEV}         # ex: https://adb-12345.12.azuredatabricks.net
+    default_catalog: ${var.catalog_name}
+    default_schema: ${var.schema_raw}
+    run_as:
+      service_principal_name: ${env.SPN_APP_ID}  # SPN pour Single-User
+    variables:
+      catalog_name: "sales_catalog"
+      schema_raw: "raw"
+      schema_curated: "curated"
+      schema_gold: "gold"
+      schema_reference: "reference"
+      schema_ml: "ml"
+
+  prod:
+    workspace:
+      host: ${env.DBRKS_HOST_PROD}
+    default_catalog: ${var.catalog_name}
+    default_schema: ${var.schema_raw}
+    run_as:
+      service_principal_name: ${env.SPN_APP_ID}
+    variables:
+      catalog_name: "sales_catalog"
+      schema_raw: "raw"
+      schema_curated: "curated"
+      schema_gold: "gold"
+      schema_reference: "reference"
+      schema_ml: "ml"

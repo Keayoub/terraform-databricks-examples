@@ -1,0 +1,16 @@
+📘 Metastore: company_metastore
+ ┣ 📁 sales_catalog
+ ┃ ┣ 📂 raw
+ ┃ ┃ ┣ 📦 Volume: sales_landing
+ ┃ ┃ ┗ 📊 Table: orders_bronze
+ ┃ ┣ 📂 curated
+ ┃ ┃ ┗ 📊 Table: orders_silver
+ ┃ ┣ 📂 gold
+ ┃ ┃ ┗ 📊 View: v_orders_monthly
+ ┃ ┣ 📂 Master and Reference # Master Data & Referential Shared  
+ ┃ ┃ ┗ 📊 Table: dim_region
+ ┃ ┗ 📂 ml
+ ┃   ┣ 📊 Table: features_customers
+ ┃   ┗ 📦 Volume: models
+ ┣ 📁 finance_catalog
+ ┗ 📁 operations_catalog
