@@ -16,8 +16,8 @@ resource "azurerm_storage_account" "landing" {
     default_action             = "Deny"
     ip_rules                   = []
     virtual_network_subnet_ids = [
-      module.adb-lakehouse.private_subnet_id,
-      module.adb-lakehouse.public_subnet_id
+      # module.adb-lakehouse.private_subnet_id,
+      # module.adb-lakehouse.public_subnet_id
     ]
     bypass = ["AzureServices"]
   }
@@ -93,8 +93,8 @@ resource "azurerm_storage_account_network_rules" "metastore_network_rules" {
   default_action             = "Deny"
   ip_rules                   = []
   virtual_network_subnet_ids = [
-    module.adb-lakehouse.private_subnet_id,
-    module.adb-lakehouse.public_subnet_id
+    # module.adb-lakehouse.private_subnet_id,
+    # module.adb-lakehouse.public_subnet_id
   ]
   bypass = ["AzureServices"]
   

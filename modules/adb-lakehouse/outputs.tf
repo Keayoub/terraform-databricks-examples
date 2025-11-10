@@ -13,6 +13,7 @@ output "vnet_id" {
   description = "**Depricated** ID of the new Vnet"
 }
 
+
 output "nsg_id" {
   value       = azurerm_network_security_group.this.id
   description = "**Depricated** ID of the new NSG"

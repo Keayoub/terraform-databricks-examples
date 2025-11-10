@@ -12,6 +12,21 @@ resource "databricks_schema" "bronze_source1-schema" {
   force_destroy = true
 }
 
+resource "databricks_schema" "silver_source1-schema" {
+  depends_on    = [databricks_catalog.bronze-catalog]
+  catalog_name  = databricks_catalog.bronze-catalog.name
+  name          = "silver_source1"
+  force_destroy = true
+}
+
+resource "databricks_schema" "gold_source1-schema" {
+  depends_on    = [databricks_catalog.bronze-catalog]
+  catalog_name  = databricks_catalog.bronze-catalog.name
+  name          = "gold_source1"
+  force_destroy = true
+}
+
+
 data "azurerm_storage_account" "ext_storage" {
   name                = var.landing_external_location_name
   resource_group_name = var.landing_adls_rg
