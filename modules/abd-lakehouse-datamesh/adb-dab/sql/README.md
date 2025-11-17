@@ -77,14 +77,31 @@ The script creates a complete Unity Catalog structure for your domain:
 - `{domain}_catalog.raw.landing` - Landing zone for raw files
 - `{domain}_catalog.ml.models` - ML model artifacts storage
 
+### Compute Resources (Documented, created via Terraform)
+- Cluster policies for data engineering and data science workloads
+- SQL Warehouse for BI analytics
+- Shared interactive clusters with proper access controls
+- Instance pools for faster cluster startup (optional)
+
+See `compute-resources.tf` for Terraform implementation.
+
+### Library Management
+- Python packages (PyPI): pandas, scikit-learn, biopython, etc.
+- BioPython and scientific computing libraries for data scientists
+- Maven/JAR packages for Scala/Java dependencies
+- Init scripts for system-level dependencies
+- Requirements files stored in Unity Catalog volumes
+
+See `libraries/README.md` for detailed library management guide.
+
 ## RBAC Matrix
 
-| Role | Raw | Curated | Gold | Reference | ML |
-|------|-----|---------|------|-----------|-----|
-| **Data Engineers** | Full | Full | Full | Full | Full |
-| **Data Scientists** | None | Read | Read | Read | Full |
-| **BI Readers** | None | None | Read | Read | None |
-| **Platform Admins** | Admin | Admin | Admin | Admin | Admin |
+| Role | Raw | Curated | Gold | Reference | ML | Compute |
+|------|-----|---------|------|-----------|-----|---------|
+| **Data Engineers** | Full | Full | Full | Full | Full | Shared clusters, CAN_USE policy |
+| **Data Scientists** | None | Read | Read | Read | Full | ML clusters (single-user), CAN_USE ML policy |
+| **BI Readers** | None | None | Read | Read | None | SQL Warehouse only |
+| **Platform Admins** | Admin | Admin | Admin | Admin | Admin | CAN_MANAGE all compute |
 
 ## Prerequisites
 

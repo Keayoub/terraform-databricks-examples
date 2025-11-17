@@ -1,28 +1,28 @@
 resource "databricks_catalog" "bronze-catalog" {
   metastore_id  = var.metastore_id
-  name          = "bronze_catalog_${var.environment_name}"
+  name          = "phac_spib_${var.environment_name}"
   comment       = "this catalog is for the bronze layer in the ${var.environment_name} environment"
   force_destroy = true
 }
 
-resource "databricks_schema" "bronze_source1-schema" {
+resource "databricks_schema" "bronze_wastewater_odm-schema" {
   depends_on    = [databricks_catalog.bronze-catalog]
   catalog_name  = databricks_catalog.bronze-catalog.name
-  name          = "bronze_source1"
+  name          = "bronze_wastewater_odm"
   force_destroy = true
 }
 
-resource "databricks_schema" "silver_source1-schema" {
+resource "databricks_schema" "silver_wastewater_odm-schema" {
   depends_on    = [databricks_catalog.bronze-catalog]
   catalog_name  = databricks_catalog.bronze-catalog.name
-  name          = "silver_source1"
+  name          = "silver_wastewater_odm"
   force_destroy = true
 }
 
-resource "databricks_schema" "gold_source1-schema" {
+resource "databricks_schema" "gold_wastewater_odm-schema" {
   depends_on    = [databricks_catalog.bronze-catalog]
   catalog_name  = databricks_catalog.bronze-catalog.name
-  name          = "gold_source1"
+  name          = "gold_wastewater_odm"
   force_destroy = true
 }
 

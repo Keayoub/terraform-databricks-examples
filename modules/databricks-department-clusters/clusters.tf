@@ -17,6 +17,31 @@ resource "databricks_cluster" "team_cluster" {
     max_workers = 10
   }
 
+  # Add libraries or other cluster configurations as needed
+  library {
+    pypi {
+      package = "scikit-learn>=1.3.0"
+    }
+  }
+
+  library {
+    pypi {
+      package = "numpy>=1.24.0"
+    }
+  }
+
+  library {
+    pypi {
+      package = "scipy>=1.11.0"
+    }
+  }
+
+  library {
+    pypi {
+      package = "mlflow>=2.8.0"
+    }
+  }
+
   custom_tags = merge(var.tags, {
     Team = var.department
   })
